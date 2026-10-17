@@ -246,8 +246,22 @@ function background(): void {
   frame();
 }
 
+// ---------- Licznik wyświetleń (abacus.jasoncameron.dev) ----------
+async function views(): Promise<void> {
+  const counted = (() => { try { return sessionStorage.getItem("viewed") === "1"; } catch { return false; } })();
+  try {
+    const res = await fetch(`https://abacus.jasoncameron.dev/${counted ? "get" : "hit"}/vynx-website/views`);
+    const { value }: { value: number } = await res.json();
+    if (typeof value !== "number") return;
+    try { sessionStorage.setItem("viewed", "1"); } catch { /* prywatne okno */ }
+    $("#viewsCount").textContent = value.toLocaleString("pl-PL");
+    $("#views").classList.remove("opacity-0");
+  } catch { /* licznik niedostępny */ }
+}
+
 marquee();
 createIcons({ icons });
+views();
 profileDates();
 intro();
 reveal();
